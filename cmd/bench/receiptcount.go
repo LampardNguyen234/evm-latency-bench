@@ -78,6 +78,7 @@ var ReceiptCountCommand = &cli.Command{
 			if err != nil {
 				return fmt.Errorf("failed to get gas fee cap: %w", err)
 			}
+			gasFeeCap = gasFeeCap.Mul(gasFeeCap, big.NewInt(2))
 
 			txData := &types.DynamicFeeTx{
 				ChainID:   chainID,

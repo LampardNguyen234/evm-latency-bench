@@ -43,6 +43,7 @@ func RunBenchmarkAsync(txCount int, pollInterval time.Duration) ([]Result, error
 		if err != nil {
 			return nil, fmt.Errorf("failed to get gas price: %w", err)
 		}
+		gasPrice = gasPrice.Mul(gasPrice, big.NewInt(2))
 
 		tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, nil)
 		chainID, err := client.NetworkID(ctx)

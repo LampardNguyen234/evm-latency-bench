@@ -124,6 +124,7 @@ func RunBenchmarkSync(txCount int) ([]Result, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to get gas fee cap: %w", err)
 		}
+		gasFeeCap = gasFeeCap.Mul(gasFeeCap, big.NewInt(2))
 
 		txData := &types.DynamicFeeTx{
 			ChainID:   chainID,
