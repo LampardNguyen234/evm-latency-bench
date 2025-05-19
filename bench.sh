@@ -87,7 +87,7 @@ echo "interval=100ms"
 go run . bench receiptcount --txcount $txcount --plot-prefix "rise_count_receipt_100ms" --plot-dir=$plot_dir --plot
 
 echo "Total time async"
-go run . bench --txcount $txcount --plot-prefix "op" --plot-dir=$plot_dir --plot
+go run . bench --txcount $txcount --plot-prefix "rise_async" --plot-dir=$plot_dir --plot
 echo "Total time compare"
 go run . bench compare --txcount $txcount --plot-prefix "rise" --plot-dir=$plot_dir --plot
 
