@@ -59,7 +59,17 @@ var CompareSubcommand = &cli.Command{
 			}
 			return sorted[mid].TotalTime
 		}
+
+		avg := func(results []bench.Result) float64 {
+			var sum int64
+			for _, r := range results {
+				sum += r.TotalTime
+			}
+			return float64(sum) / float64(len(results))
+		}
+
 		fmt.Printf("\nMedian Total Time (ms): Async = %v, Sync = %v\n", median(asyncResults), median(syncResults))
+		fmt.Printf("Avg Total Time (ms): Async = %v, Sync = %v\n", avg(asyncResults), avg(syncResults))
 
 		if plotEnabled {
 			fullPath := filepath.Join(plotDir, plotPrefix+".png")
