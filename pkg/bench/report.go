@@ -182,15 +182,9 @@ func PlotCombinedMetrics(results []Result, rpcTime time.Duration, filename strin
 	p.Legend.Left = false
 	p.Add(plotter.NewGrid())
 
-	err := plotutil.AddLinePoints(p,
-		"Total Time", totalPts,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to add line points: %w", err)
-	}
-
 	// Add baseline line for median eth_blockNumber call time
 	if rpcTime != 0 {
+		p.Y.Min = float64(rpcTime.Milliseconds() / 2)
 		medianMs := float64(rpcTime.Milliseconds())
 		baselineLine := plotter.NewFunction(func(x float64) float64 { return medianMs })
 		baselineLine.Color = color.RGBA{R: 255, G: 0, B: 0, A: 128} // semi-transparent red
@@ -199,6 +193,13 @@ func PlotCombinedMetrics(results []Result, rpcTime time.Duration, filename strin
 
 		p.Add(baselineLine)
 		p.Legend.Add("RPC Time", baselineLine)
+	}
+
+	err := plotutil.AddLinePoints(p,
+		"Total Time", totalPts,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to add line points: %w", err)
 	}
 
 	if err := p.Save(8*vg.Inch, 5*vg.Inch, filename); err != nil {
