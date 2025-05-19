@@ -148,6 +148,8 @@ func plotReceiptCallCounts(counts []int, filename string) error {
 	p.Title.Text = "eth_getTransactionReceipt Calls Per Transaction"
 	p.X.Label.Text = "Transaction #"
 	p.Y.Label.Text = "Receipt Call Count"
+	p.Legend.Top = true
+	p.Legend.Left = false
 	p.Add(plotter.NewGrid())
 
 	err := plotutil.AddLinePoints(p, "Receipt Calls", pts)
