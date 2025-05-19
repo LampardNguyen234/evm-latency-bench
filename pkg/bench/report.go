@@ -2,7 +2,6 @@ package bench
 
 import (
 	"fmt"
-	"image/color"
 	"sort"
 
 	"gonum.org/v1/plot"
@@ -238,62 +237,31 @@ func PlotCombinedTotalTimeWithMedian(asyncResults, syncResults []Result, filenam
 		return fmt.Errorf("async and sync results length mismatch")
 	}
 
-	asyncPts := make(plotter.XYs, len(asyncResults))
-	syncPts := make(plotter.XYs, len(syncResults))
+	asyncTotalPts := make(plotter.XYs, len(asyncResults))
+	syncTotalPts := make(plotter.XYs, len(syncResults))
+	asyncSendPts := make(plotter.XYs, len(asyncResults))
 
 	for i := range asyncResults {
 		x := float64(i + 1)
-		asyncPts[i].X, asyncPts[i].Y = x, float64(asyncResults[i].TotalTime)
-		syncPts[i].X, syncPts[i].Y = x, float64(syncResults[i].TotalTime)
+		asyncTotalPts[i].X, asyncTotalPts[i].Y = x, float64(asyncResults[i].TotalTime)
+		syncTotalPts[i].X, syncTotalPts[i].Y = x, float64(syncResults[i].TotalTime)
+		asyncSendPts[i].X, asyncSendPts[i].Y = x, float64(asyncResults[i].SendTime)
 	}
 
 	p := plot.New()
-	p.Title.Text = "Total Transaction Time Comparison with Median Lines"
+	p.Title.Text = "Benchmark Time Comparison"
 	p.X.Label.Text = "Transaction #"
-	p.Y.Label.Text = "Total Time (ms)"
+	p.Y.Label.Text = "Time (ms)"
 	p.Add(plotter.NewGrid())
 
-	// Add async and sync total time lines
 	err := plotutil.AddLinePoints(p,
-		"Async Total Time", asyncPts,
-		"Sync Total Time", syncPts,
+		"Async Total Time", asyncTotalPts,
+		"Sync Total Time", syncTotalPts,
+		"Async Send Time", asyncSendPts,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to add line points: %w", err)
 	}
-
-	// Compute medians
-	asyncTimes := make([]int64, len(asyncResults))
-	syncTimes := make([]int64, len(syncResults))
-	for i := range asyncResults {
-		asyncTimes[i] = asyncResults[i].TotalTime
-		syncTimes[i] = syncResults[i].TotalTime
-	}
-	asyncMedian := float64(medianInt64(asyncTimes))
-	syncMedian := float64(medianInt64(syncTimes))
-
-	// Create median lines spanning full X range
-	xmin := 1.0
-	xmax := float64(len(asyncResults))
-
-	asyncMedianLine := plotter.NewFunction(func(x float64) float64 { return asyncMedian })
-	asyncMedianLine.Color = color.RGBA{R: 255, A: 255} // red
-	asyncMedianLine.Width = vg.Points(1.5)
-	asyncMedianLine.Dashes = []vg.Length{vg.Points(5), vg.Points(5)}
-
-	syncMedianLine := plotter.NewFunction(func(x float64) float64 { return syncMedian })
-	syncMedianLine.Color = color.RGBA{B: 255, A: 255} // blue
-	syncMedianLine.Width = vg.Points(1.5)
-	syncMedianLine.Dashes = []vg.Length{vg.Points(5), vg.Points(5)}
-
-	p.Add(asyncMedianLine, syncMedianLine)
-
-	// Add legend entries for median lines
-	p.Legend.Add("Async Median", asyncMedianLine)
-	p.Legend.Add("Sync Median", syncMedianLine)
-
-	p.X.Min = xmin
-	p.X.Max = xmax
 
 	if err := p.Save(8*vg.Inch, 5*vg.Inch, filename); err != nil {
 		return fmt.Errorf("failed to save plot: %w", err)

@@ -13,7 +13,7 @@ import (
 )
 
 var BlockNumberCommand = &cli.Command{
-	Name:  "blocknumber",
+	Name:  "resp-time",
 	Usage: "Measure time to call eth_blockNumber RPC",
 	Flags: []cli.Flag{
 		&cli.StringFlag{

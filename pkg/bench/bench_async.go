@@ -21,18 +21,19 @@ func RunBenchmarkAsync(txCount int, pollInterval time.Duration) ([]Result, error
 
 	results := make([]Result, 0, txCount)
 
-	for i := 0; i < txCount; i++ {
-		keyHex := privKeys[i%len(privKeys)]
-		privKey, err := crypto.HexToECDSA(keyHex)
-		if err != nil {
-			return nil, fmt.Errorf("invalid private key: %w", err)
-		}
-		fromAddress := crypto.PubkeyToAddress(privKey.PublicKey)
+	privKey, err := crypto.HexToECDSA(privKeys[0])
+	if err != nil {
+		return nil, fmt.Errorf("invalid private key: %w", err)
+	}
+	fromAddress := crypto.PubkeyToAddress(privKey.PublicKey)
 
-		nonce, err := client.PendingNonceAt(ctx, fromAddress)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get nonce: %w", err)
-		}
+	nonce, err := client.PendingNonceAt(ctx, fromAddress)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get nonce: %w", err)
+	}
+	for i := 0; i < txCount; i++ {
+		time.Sleep(200 * time.Millisecond)
+
 		log.Printf("[INFO] Tx %d: nonce %d from %s", i+1, nonce, fromAddress.Hex())
 
 		toAddress := fromAddress  // self-transfer
@@ -91,6 +92,7 @@ func RunBenchmarkAsync(txCount int, pollInterval time.Duration) ([]Result, error
 			ConfirmTime: confirmDuration.Milliseconds(),
 			TotalTime:   totalDuration.Milliseconds(),
 		})
+		nonce++
 	}
 
 	return results, nil

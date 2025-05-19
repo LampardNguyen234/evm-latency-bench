@@ -99,19 +99,18 @@ func RunBenchmarkSync(txCount int) ([]Result, error) {
 
 	results := make([]Result, 0, txCount)
 
+	privKey, err := crypto.HexToECDSA(privKeys[0])
+	if err != nil {
+		return nil, fmt.Errorf("invalid private key: %w", err)
+	}
+	fromAddress := crypto.PubkeyToAddress(privKey.PublicKey)
+
+	nonce, err := client.PendingNonceAt(ctx, fromAddress)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get nonce: %w", err)
+	}
+
 	for i := 0; i < txCount; i++ {
-		keyHex := privKeys[i%len(privKeys)]
-		privKey, err := crypto.HexToECDSA(keyHex)
-		if err != nil {
-			return nil, fmt.Errorf("invalid private key: %w", err)
-		}
-		fromAddress := crypto.PubkeyToAddress(privKey.PublicKey)
-
-		nonce, err := client.PendingNonceAt(ctx, fromAddress)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get nonce: %w", err)
-		}
-
 		toAddress := fromAddress  // self-transfer
 		value := big.NewInt(1e10) // 0.00000000001 ETH
 		gasLimit := uint64(21000)
@@ -177,6 +176,7 @@ func RunBenchmarkSync(txCount int) ([]Result, error) {
 			ConfirmTime: 0,
 			TotalTime:   sendDuration.Milliseconds(),
 		})
+		nonce++
 	}
 
 	return results, nil
