@@ -75,6 +75,7 @@ func sendRawTransactionSyncWithMethod(rpcURL, rawTxHex, method string) (json.Raw
 }
 
 func RunBenchmarkSync(txCount int) ([]Result, error) {
+	time.Sleep(10 * time.Second)
 	client, err := ethclient.Dial(rpcEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RPC endpoint: %w", err)
