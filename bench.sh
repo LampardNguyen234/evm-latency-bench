@@ -15,7 +15,7 @@ echo "interval=100ms"
 go run . bench receiptcount --txcount $txcount --plot-prefix "arb_count_receipt_100ms" --plot-dir=$plot_dir --plot
 
 echo "Total time"
-go run . bench --txcount $txcount --plot-prefix "base" --plot-dir=$plot_dir --plot
+go run . bench --txcount $txcount --plot-prefix "arb" --plot-dir=$plot_dir --plot
 echo "DONE Arbitrum"
 echo ""
 echo ""
