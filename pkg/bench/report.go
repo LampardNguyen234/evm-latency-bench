@@ -127,6 +127,8 @@ func PlotMetrics(results []Result, filenamePrefix string) error {
 		p.Title.Text = title
 		p.X.Label.Text = "Transaction #"
 		p.Y.Label.Text = "Time (ms)"
+		p.Legend.Top = true
+		p.Legend.Left = false
 		p.Add(plotter.NewGrid())
 
 		err := plotutil.AddLinePoints(p, title, pts)
@@ -174,6 +176,8 @@ func PlotCombinedMetrics(results []Result, filename string) error {
 	p.Title.Text = "Benchmark Time Metrics"
 	p.X.Label.Text = "Transaction #"
 	p.Y.Label.Text = "Time (ms)"
+	p.Legend.Top = true
+	p.Legend.Left = false
 	p.Add(plotter.NewGrid())
 
 	err := plotutil.AddLinePoints(p,
@@ -213,6 +217,8 @@ func PlotCombinedTotalTime(asyncResults, syncResults []Result, filename string) 
 	p.Title.Text = "Total Transaction Time Comparison"
 	p.X.Label.Text = "Transaction #"
 	p.Y.Label.Text = "Total Time (ms)"
+	p.Legend.Top = true
+	p.Legend.Left = false
 	p.Add(plotter.NewGrid())
 
 	err := plotutil.AddLinePoints(p,
@@ -252,6 +258,8 @@ func PlotCombinedTotalTimeWithMedian(asyncResults, syncResults []Result, filenam
 	p.Title.Text = "Benchmark Time Comparison"
 	p.X.Label.Text = "Transaction #"
 	p.Y.Label.Text = "Time (ms)"
+	p.Legend.Top = true
+	p.Legend.Left = false
 	p.Add(plotter.NewGrid())
 
 	err := plotutil.AddLinePoints(p,
