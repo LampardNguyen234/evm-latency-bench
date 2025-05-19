@@ -81,6 +81,11 @@ var BenchCommand = &cli.Command{
 		if metrics == nil {
 			return fmt.Errorf("failed to extract RPC response time metrics")
 		}
+		fmt.Println("\neth_blockNumber call time statistics:")
+		fmt.Printf("Min:    %v\n", metrics[0])
+		fmt.Printf("Max:    %v\n", metrics[1])
+		fmt.Printf("Avg:    %v\n", metrics[2])
+		fmt.Printf("Median: %v\n", metrics[3])
 
 		switch mode {
 		case "async":
