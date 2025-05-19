@@ -202,7 +202,7 @@ func PlotCombinedMetrics(results []Result, rpcTime time.Duration, filename strin
 		return fmt.Errorf("failed to add line points: %w", err)
 	}
 
-	if err := p.Save(8*vg.Inch, 5*vg.Inch, filename); err != nil {
+	if err := p.Save(12*vg.Inch, 5*vg.Inch, filename); err != nil {
 		return fmt.Errorf("failed to save plot: %w", err)
 	}
 	return nil
@@ -242,7 +242,7 @@ func PlotCombinedTotalTime(asyncResults, syncResults []Result, filename string) 
 		return fmt.Errorf("failed to add line points: %w", err)
 	}
 
-	if err := p.Save(8*vg.Inch, 5*vg.Inch, filename); err != nil {
+	if err := p.Save(12*vg.Inch, 5*vg.Inch, filename); err != nil {
 		return fmt.Errorf("failed to save plot: %w", err)
 	}
 	return nil
@@ -284,7 +284,7 @@ func PlotCombinedTotalTimeWithMedian(asyncResults, syncResults []Result, filenam
 		return fmt.Errorf("failed to add line points: %w", err)
 	}
 
-	if err := p.Save(8*vg.Inch, 5*vg.Inch, filename); err != nil {
+	if err := p.Save(12*vg.Inch, 5*vg.Inch, filename); err != nil {
 		return fmt.Errorf("failed to save plot: %w", err)
 	}
 	return nil
@@ -336,7 +336,7 @@ func PlotWithBlockNumberBaseline(asyncResults, syncResults []Result, rpcTime tim
 		p.Legend.Add("RPC Time", baselineLine)
 	}
 
-	if err := p.Save(8*vg.Inch, 5*vg.Inch, filename); err != nil {
+	if err := p.Save(12*vg.Inch, 5*vg.Inch, filename); err != nil {
 		return err
 	}
 	return nil
