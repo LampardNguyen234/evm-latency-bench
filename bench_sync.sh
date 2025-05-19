@@ -1,11 +1,11 @@
 #!/bin/bash
 
-txcount=10
+txcount=100
 plot_dir="plots"
 
 echo "Benchmarking MegaETH..."
 echo "Getting the baseline"
-cp mega.env .env && go run . bench resp-time --count $txcount
+cp mega.env .env && go run . bench resp-time --count 20
 
 echo "Total time async"
 go run . bench --txcount $txcount --plot-prefix "mega_async" --plot-dir=$plot_dir --plot
@@ -18,7 +18,7 @@ echo ""
 
 echo "Benchmarking RISE..."
 echo "Getting the baseline"
-cp rise.env .env && go run . bench resp-time --count $txcount
+cp rise.env .env && go run . bench resp-time --count 20
 
 echo "Total time async"
 go run . bench --txcount $txcount --plot-prefix "rise_async" --plot-dir=$plot_dir --plot
