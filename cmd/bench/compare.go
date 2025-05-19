@@ -1,10 +1,13 @@
 package bench
 
 import (
+	"context"
 	"fmt"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/urfave/cli/v2"
 	"path/filepath"
 	"sort"
+	"time"
 
 	"github.com/LampardNguyen234/evm-latency-bench/pkg/bench"
 )
@@ -72,8 +75,9 @@ var CompareSubcommand = &cli.Command{
 		fmt.Printf("Avg Total Time (ms): Async = %v, Sync = %v\n", avg(asyncResults), avg(syncResults))
 
 		if plotEnabled {
+			blockNumberMedian := c.Duration("rpc-time-median")
 			fullPath := filepath.Join(plotDir, plotPrefix+".png")
-			if err := bench.PlotCombinedTotalTimeWithMedian(asyncResults, syncResults, fullPath); err != nil {
+			if err := bench.PlotWithBlockNumberBaseline(asyncResults, syncResults, blockNumberMedian, fullPath); err != nil {
 				fmt.Printf("Warning: failed to generate combined plot: %v\n", err)
 			} else {
 				fmt.Printf("Combined benchmark plot saved as '%s'\n", fullPath)
@@ -82,4 +86,25 @@ var CompareSubcommand = &cli.Command{
 
 		return nil
 	},
+}
+
+func MeasureBlockNumberMedian(ctx context.Context, client *ethclient.Client, calls int, interval time.Duration) (time.Duration, error) {
+	times := make([]time.Duration, 0, calls)
+	for i := 0; i < calls; i++ {
+		start := time.Now()
+		_, err := client.BlockNumber(ctx)
+		if err != nil {
+			return 0, err
+		}
+		elapsed := time.Since(start)
+		times = append(times, elapsed)
+		time.Sleep(interval)
+	}
+	sort.Slice(times, func(i, j int) bool { return times[i] < times[j] })
+
+	mid := len(times) / 2
+	if len(times)%2 == 0 {
+		return (times[mid-1] + times[mid]) / 2, nil
+	}
+	return times[mid], nil
 }

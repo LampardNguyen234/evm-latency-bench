@@ -2,7 +2,9 @@ package bench
 
 import (
 	"fmt"
+	"image/color"
 	"sort"
+	"time"
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -273,6 +275,59 @@ func PlotCombinedTotalTimeWithMedian(asyncResults, syncResults []Result, filenam
 
 	if err := p.Save(8*vg.Inch, 5*vg.Inch, filename); err != nil {
 		return fmt.Errorf("failed to save plot: %w", err)
+	}
+	return nil
+}
+
+func PlotWithBlockNumberBaseline(asyncResults, syncResults []Result, blockNumberMedian time.Duration, filename string) error {
+	n := len(asyncResults)
+	if n == 0 || len(syncResults) != n {
+		return fmt.Errorf("result length mismatch or empty")
+	}
+
+	asyncTotalPts := make(plotter.XYs, n)
+	syncTotalPts := make(plotter.XYs, n)
+	asyncSendPts := make(plotter.XYs, n)
+
+	for i := 0; i < n; i++ {
+		x := float64(i + 1)
+		asyncTotalPts[i].X, asyncTotalPts[i].Y = x, float64(asyncResults[i].TotalTime)
+		syncTotalPts[i].X, syncTotalPts[i].Y = x, float64(syncResults[i].TotalTime)
+		asyncSendPts[i].X, asyncSendPts[i].Y = x, float64(asyncResults[i].SendTime)
+	}
+
+	p := plot.New()
+	p.Title.Text = "Sync vs Async"
+	p.X.Label.Text = "Tx #"
+	p.Y.Label.Text = "Time (ms)"
+	p.Legend.Top = true
+	p.Legend.Left = false
+	p.Add(plotter.NewGrid())
+
+	// Add benchmark lines
+	err := plotutil.AddLinePoints(p,
+		"Async Total Time", asyncTotalPts,
+		"Sync Total Time", syncTotalPts,
+		"Async Send Time", asyncSendPts,
+	)
+	if err != nil {
+		return err
+	}
+
+	// Add baseline line for median eth_blockNumber call time
+	if blockNumberMedian != 0 {
+		medianMs := float64(blockNumberMedian.Milliseconds())
+		baselineLine := plotter.NewFunction(func(x float64) float64 { return medianMs })
+		baselineLine.Color = color.RGBA{R: 255, G: 0, B: 0, A: 128} // semi-transparent red
+		baselineLine.Width = vg.Points(1.5)
+		baselineLine.Dashes = []vg.Length{vg.Points(5), vg.Points(5)}
+
+		p.Add(baselineLine)
+		p.Legend.Add("RPC Time", baselineLine)
+	}
+
+	if err := p.Save(8*vg.Inch, 5*vg.Inch, filename); err != nil {
+		return err
 	}
 	return nil
 }

@@ -46,6 +46,11 @@ var BenchFlags = []cli.Flag{
 		Usage: "Directory to save PNG plot files",
 		Value: ".",
 	},
+	&cli.DurationFlag{
+		Name:  "rpc-time",
+		Usage: "Median eth_blockNumber response time as baseline (e.g., 100ms)",
+		Value: 0, // Default: disabled
+	},
 }
 
 var BenchCommand = &cli.Command{
