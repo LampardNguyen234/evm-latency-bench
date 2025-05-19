@@ -155,28 +155,32 @@ func RunBenchmarkSync(txCount int) ([]Result, error) {
 		resultRaw, err := sendRawTransactionSyncWithMethod(rpcEndpoint, rawTxHex, rpcMethod)
 		sendEnd := time.Now()
 		if err != nil {
-			return nil, fmt.Errorf("%s failed: %w", rpcMethod, err)
-		}
-		sendDuration := sendEnd.Sub(sendStart)
-
-		var receipt types.Receipt
-		if err := json.Unmarshal(resultRaw, &receipt); err != nil {
-			// Log but continue
-			log.Printf("[WARN] Tx %d: failed to unmarshal receipt: %v", i+1, err)
+			// Log the error and continue with next transaction
+			log.Printf("[WARN] Tx %d: RPC call failed: %v. Skipping and continuing.", i+1, err)
+			time.Sleep(2 * time.Second)
 		} else {
-			log.Printf("[INFO] Tx %d: receipt status: %d, block number: %d", i+1, receipt.Status, receipt.BlockNumber.Uint64())
+			sendDuration := sendEnd.Sub(sendStart)
+
+			var receipt types.Receipt
+			if err := json.Unmarshal(resultRaw, &receipt); err != nil {
+				// Log but continue
+				log.Printf("[WARN] Tx %d: failed to unmarshal receipt: %v", i+1, err)
+			} else {
+				log.Printf("[INFO] Tx %d: receipt status: %d, block number: %d", i+1, receipt.Status, receipt.BlockNumber.Uint64())
+			}
+
+			txHash := signedTx.Hash()
+			log.Printf("[INFO] Tx %d: sent and received receipt for %s in %v", i+1, txHash.Hex(), sendDuration)
+
+			results = append(results, Result{
+				TxIndex:     i + 1,
+				TxHash:      txHash.Hex(),
+				SendTime:    sendDuration.Milliseconds(),
+				ConfirmTime: 0,
+				TotalTime:   sendDuration.Milliseconds(),
+			})
 		}
 
-		txHash := signedTx.Hash()
-		log.Printf("[INFO] Tx %d: sent and received receipt for %s in %v", i+1, txHash.Hex(), sendDuration)
-
-		results = append(results, Result{
-			TxIndex:     i + 1,
-			TxHash:      txHash.Hex(),
-			SendTime:    sendDuration.Milliseconds(),
-			ConfirmTime: 0,
-			TotalTime:   sendDuration.Milliseconds(),
-		})
 		nonce++
 	}
 
