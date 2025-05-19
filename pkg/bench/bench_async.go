@@ -32,7 +32,7 @@ func RunBenchmarkAsync(txCount int, pollInterval time.Duration) ([]Result, error
 		return nil, fmt.Errorf("failed to get nonce: %w", err)
 	}
 	for i := 0; i < txCount; i++ {
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(10 * time.Millisecond)
 
 		log.Printf("[INFO] Tx %d: nonce %d from %s", i+1, nonce, fromAddress.Hex())
 
