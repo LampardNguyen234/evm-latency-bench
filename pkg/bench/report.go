@@ -318,7 +318,6 @@ func PlotWithBlockNumberBaseline(asyncResults, syncResults []Result, rpcTime tim
 	err := plotutil.AddLinePoints(p,
 		"Async Total Time", asyncTotalPts,
 		"Sync Total Time", syncTotalPts,
-		"Async Send Time", asyncSendPts,
 	)
 	if err != nil {
 		return err
