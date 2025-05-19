@@ -28,6 +28,18 @@ var CompareSubcommand = &cli.Command{
 		plotDir := c.String("plot-dir")
 		plotPrefix := c.String("plot-prefix")
 
+		fmt.Println("Extracting RPC response time metrics...")
+		client, err := ethclient.Dial(bench.RPCEndpoint())
+		if err != nil {
+			return fmt.Errorf("failed to connect RPC endpoint: %w", err)
+		}
+		defer client.Close()
+
+		metrics := extractRPCTime(client, 10, 100*time.Millisecond)
+		if metrics == nil {
+			return fmt.Errorf("failed to extract RPC response time metrics")
+		}
+
 		fmt.Println("Running async benchmark...")
 		asyncResults, err := bench.RunBenchmarkAsync(txCount, pollInterval)
 		if err != nil {
@@ -75,9 +87,8 @@ var CompareSubcommand = &cli.Command{
 		fmt.Printf("Avg Total Time (ms): Async = %v, Sync = %v\n", avg(asyncResults), avg(syncResults))
 
 		if plotEnabled {
-			blockNumberMedian := c.Duration("rpc-time-median")
 			fullPath := filepath.Join(plotDir, plotPrefix+".png")
-			if err := bench.PlotWithBlockNumberBaseline(asyncResults, syncResults, blockNumberMedian, fullPath); err != nil {
+			if err := bench.PlotWithBlockNumberBaseline(asyncResults, syncResults, metrics[3], fullPath); err != nil {
 				fmt.Printf("Warning: failed to generate combined plot: %v\n", err)
 			} else {
 				fmt.Printf("Combined benchmark plot saved as '%s'\n", fullPath)
