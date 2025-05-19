@@ -158,7 +158,7 @@ func PlotMetrics(results []Result, filenamePrefix string) error {
 }
 
 // PlotCombinedMetrics creates a single PNG plot with send, confirm, and total times.
-func PlotCombinedMetrics(results []Result, filename string) error {
+func PlotCombinedMetrics(results []Result, rpcTime time.Duration, filename string) error {
 	if len(results) == 0 {
 		return fmt.Errorf("no results to plot")
 	}
@@ -183,12 +183,22 @@ func PlotCombinedMetrics(results []Result, filename string) error {
 	p.Add(plotter.NewGrid())
 
 	err := plotutil.AddLinePoints(p,
-		"Send Time", sendPts,
-		"Confirm Time", confirmPts,
 		"Total Time", totalPts,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to add line points: %w", err)
+	}
+
+	// Add baseline line for median eth_blockNumber call time
+	if rpcTime != 0 {
+		medianMs := float64(rpcTime.Milliseconds())
+		baselineLine := plotter.NewFunction(func(x float64) float64 { return medianMs })
+		baselineLine.Color = color.RGBA{R: 255, G: 0, B: 0, A: 128} // semi-transparent red
+		baselineLine.Width = vg.Points(1.5)
+		baselineLine.Dashes = []vg.Length{vg.Points(5), vg.Points(5)}
+
+		p.Add(baselineLine)
+		p.Legend.Add("RPC Time", baselineLine)
 	}
 
 	if err := p.Save(8*vg.Inch, 5*vg.Inch, filename); err != nil {
@@ -279,7 +289,7 @@ func PlotCombinedTotalTimeWithMedian(asyncResults, syncResults []Result, filenam
 	return nil
 }
 
-func PlotWithBlockNumberBaseline(asyncResults, syncResults []Result, blockNumberMedian time.Duration, filename string) error {
+func PlotWithBlockNumberBaseline(asyncResults, syncResults []Result, rpcTime time.Duration, filename string) error {
 	n := len(asyncResults)
 	if n == 0 || len(syncResults) != n {
 		return fmt.Errorf("result length mismatch or empty")
@@ -315,8 +325,8 @@ func PlotWithBlockNumberBaseline(asyncResults, syncResults []Result, blockNumber
 	}
 
 	// Add baseline line for median eth_blockNumber call time
-	if blockNumberMedian != 0 {
-		medianMs := float64(blockNumberMedian.Milliseconds())
+	if rpcTime != 0 {
+		medianMs := float64(rpcTime.Milliseconds())
 		baselineLine := plotter.NewFunction(func(x float64) float64 { return medianMs })
 		baselineLine.Color = color.RGBA{R: 255, G: 0, B: 0, A: 128} // semi-transparent red
 		baselineLine.Width = vg.Points(1.5)

@@ -3,6 +3,7 @@ package bench
 import (
 	"fmt"
 	"github.com/LampardNguyen234/evm-latency-bench/pkg/bench"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/urfave/cli/v2"
 	"path/filepath"
 	"time"
@@ -69,6 +70,18 @@ var BenchCommand = &cli.Command{
 		var results []bench.Result
 		var err error
 
+		fmt.Println("Extracting RPC response time metrics...")
+		client, err := ethclient.Dial(bench.RPCEndpoint())
+		if err != nil {
+			return fmt.Errorf("failed to connect RPC endpoint: %w", err)
+		}
+		defer client.Close()
+
+		metrics := extractRPCTime(client, 10, 100*time.Millisecond)
+		if metrics == nil {
+			return fmt.Errorf("failed to extract RPC response time metrics")
+		}
+
 		switch mode {
 		case "async":
 			results, err = bench.RunBenchmarkAsync(txCount, pollInterval)
@@ -85,7 +98,7 @@ var BenchCommand = &cli.Command{
 
 		if plotEnabled {
 			fullPath := filepath.Join(plotDir, plotPrefix+"_combined.png")
-			if err := bench.PlotCombinedMetrics(results, fullPath); err != nil {
+			if err := bench.PlotCombinedMetrics(results, metrics[3], fullPath); err != nil {
 				fmt.Printf("Warning: failed to generate combined plot: %v\n", err)
 			} else {
 				fmt.Printf("Combined benchmark plot saved as '%s'\n", fullPath)
