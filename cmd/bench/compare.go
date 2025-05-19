@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/urfave/cli/v2"
 	"path/filepath"
+	"sort"
 
 	"github.com/LampardNguyen234/evm-latency-bench/pkg/bench"
 )
@@ -48,14 +49,17 @@ var CompareSubcommand = &cli.Command{
 		}
 
 		// Print averages summary
-		avg := func(results []bench.Result) float64 {
-			var sum int64
-			for _, r := range results {
-				sum += r.TotalTime
+		median := func(results []bench.Result) int64 {
+			sorted := make([]bench.Result, len(results))
+			copy(sorted, results)
+			sort.Slice(sorted, func(i, j int) bool { return sorted[i].TotalTime < sorted[j].TotalTime })
+			mid := len(sorted) / 2
+			if len(sorted)%2 == 0 {
+				return (sorted[mid-1].TotalTime + sorted[mid].TotalTime) / 2
 			}
-			return float64(sum) / float64(len(results))
+			return sorted[mid].TotalTime
 		}
-		fmt.Printf("\nAverage Total Time (ms): Async = %.2f, Sync = %.2f\n", avg(asyncResults), avg(syncResults))
+		fmt.Printf("\nMedian Total Time (ms): Async = %v, Sync = %v\n", median(asyncResults), median(syncResults))
 
 		if plotEnabled {
 			fullPath := filepath.Join(plotDir, plotPrefix+".png")
