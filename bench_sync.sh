@@ -17,7 +17,7 @@ cp mega.env .env
 #go run . bench --txcount $txcount --mode "sync" --plot-prefix "mega_sync" --plot-dir=$plot_dir --plot
 
 echo "Total time compare"
-go run . bench compare --txcount $txcount --poll-interval "1ms" --plot-prefix "mega" --plot-dir=$plot_dir --plot
+go run . bench compare --txcount $txcount --poll-interval "10ms" --plot-prefix "mega" --plot-dir=$plot_dir --plot
 echo "DONE MegaETH"
 echo ""
 echo ""
@@ -30,7 +30,7 @@ cp rise.env .env
 #go run . bench --txcount $txcount --mode "sync" --plot-prefix "rise_sync" --plot-dir=$plot_dir --plot
 
 echo "Total time compare"
-go run . bench compare --txcount $txcount --poll-interval "1ms" --plot-prefix "rise" --plot-dir=$plot_dir --plot
+go run . bench compare --txcount $txcount --poll-interval "10ms" --plot-prefix "rise" --plot-dir=$plot_dir --plot
 
 echo "DONE Rise"
 echo ""
