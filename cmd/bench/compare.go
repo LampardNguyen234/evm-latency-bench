@@ -35,7 +35,7 @@ var CompareSubcommand = &cli.Command{
 		}
 		defer client.Close()
 
-		metrics := extractRPCTime(client, 10, 100*time.Millisecond)
+		metrics := extractRPCTime(client, 50, 500*time.Millisecond)
 		if metrics == nil {
 			return fmt.Errorf("failed to extract RPC response time metrics")
 		}
