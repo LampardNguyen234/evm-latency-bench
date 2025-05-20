@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/LampardNguyen234/evm-latency-bench/pkg/bench"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/iancoleman/strcase"
 	"github.com/urfave/cli/v2"
 	"path/filepath"
 	"time"
@@ -102,8 +103,8 @@ var BenchCommand = &cli.Command{
 		bench.PrintReport(results)
 
 		if plotEnabled {
-			fullPath := filepath.Join(plotDir, plotPrefix+"_combined.png")
-			if err := bench.PlotCombinedMetrics(results, metrics[3], fullPath); err != nil {
+			fullPath := filepath.Join(plotDir, plotPrefix+".png")
+			if err := bench.PlotCombinedMetrics(results, metrics[3], strcase.ToCamel(mode), fullPath); err != nil {
 				fmt.Printf("Warning: failed to generate combined plot: %v\n", err)
 			} else {
 				fmt.Printf("Combined benchmark plot saved as '%s'\n", fullPath)

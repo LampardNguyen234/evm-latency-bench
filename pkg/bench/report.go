@@ -158,7 +158,7 @@ func PlotMetrics(results []Result, filenamePrefix string) error {
 }
 
 // PlotCombinedMetrics creates a single PNG plot with send, confirm, and total times.
-func PlotCombinedMetrics(results []Result, rpcTime time.Duration, filename string) error {
+func PlotCombinedMetrics(results []Result, rpcTime time.Duration, plotName, filename string) error {
 	if len(results) == 0 {
 		return fmt.Errorf("no results to plot")
 	}
@@ -175,7 +175,7 @@ func PlotCombinedMetrics(results []Result, rpcTime time.Duration, filename strin
 	}
 
 	p := plot.New()
-	p.Title.Text = "Benchmark Time Metrics"
+	p.Title.Text = plotName
 	p.X.Label.Text = "Transaction #"
 	p.Y.Label.Text = "Time (ms)"
 	p.Legend.Top = true
