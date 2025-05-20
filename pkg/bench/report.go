@@ -127,7 +127,7 @@ func PlotMetrics(results []Result, filenamePrefix string) error {
 	savePlot := func(title, filename string, pts plotter.XYs) error {
 		p := plot.New()
 		p.Title.Text = title
-		p.X.Label.Text = "Transaction #"
+		p.X.Label.Text = "#Transactions"
 		p.Y.Label.Text = "Time (ms)"
 		p.Legend.Top = true
 		p.Legend.Left = false
@@ -176,7 +176,7 @@ func PlotCombinedMetrics(results []Result, rpcTime time.Duration, plotName, file
 
 	p := plot.New()
 	p.Title.Text = plotName
-	p.X.Label.Text = "Transaction #"
+	p.X.Label.Text = "#Transactions"
 	p.Y.Label.Text = "Time (ms)"
 	p.Legend.Top = true
 	p.Legend.Left = false
@@ -228,7 +228,7 @@ func PlotCombinedTotalTime(asyncResults, syncResults []Result, filename string) 
 
 	p := plot.New()
 	p.Title.Text = "Total Transaction Time Comparison"
-	p.X.Label.Text = "Transaction #"
+	p.X.Label.Text = "#Transactions"
 	p.Y.Label.Text = "Total Time (ms)"
 	p.Legend.Top = true
 	p.Legend.Left = false
@@ -269,7 +269,7 @@ func PlotCombinedTotalTimeWithMedian(asyncResults, syncResults []Result, filenam
 
 	p := plot.New()
 	p.Title.Text = "Benchmark Time Comparison"
-	p.X.Label.Text = "Transaction #"
+	p.X.Label.Text = "#Transactions"
 	p.Y.Label.Text = "Time (ms)"
 	p.Legend.Top = true
 	p.Legend.Left = false

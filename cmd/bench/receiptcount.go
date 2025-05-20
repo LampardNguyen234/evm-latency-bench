@@ -147,7 +147,7 @@ func plotReceiptCallCounts(counts []int, filename string) error {
 
 	p := plot.New()
 	p.Title.Text = "eth_getTransactionReceipt Calls Per Transaction"
-	p.X.Label.Text = "Transaction #"
+	p.X.Label.Text = "#Transactions"
 	p.Y.Label.Text = "Receipt Call Count"
 	p.Legend.Top = true
 	p.Legend.Left = false
