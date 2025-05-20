@@ -1,6 +1,11 @@
 #!/bin/bash
 
-txcount=100
+txcount=$1
+# shellcheck disable=SC1073
+if [ -z $txcount ]; then
+  txcount=100;
+fi
+echo "txcount: ${txcount}"
 plot_dir="plots"
 
 echo "Benchmarking MegaETH..."
