@@ -20,7 +20,7 @@ var BenchFlags = []cli.Flag{
 	&cli.DurationFlag{
 		Name:    "poll-interval",
 		Usage:   "Polling interval for receipt queries (only async mode)",
-		Value:   10 * time.Millisecond,
+		Value:   1 * time.Millisecond,
 		EnvVars: []string{"POLL_INTERVAL_MS"},
 	},
 	&cli.StringFlag{
