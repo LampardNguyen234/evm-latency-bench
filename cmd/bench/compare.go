@@ -29,6 +29,7 @@ var CompareSubcommand = &cli.Command{
 		plotPrefix := c.String("plot-prefix")
 
 		fmt.Println("Extracting RPC response time metrics...")
+		fmt.Printf("RPCEndpoint: %v\n", bench.RPCEndpoint())
 		client, err := ethclient.Dial(bench.RPCEndpoint())
 		if err != nil {
 			return fmt.Errorf("failed to connect RPC endpoint: %w", err)
